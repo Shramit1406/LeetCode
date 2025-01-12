@@ -1,0 +1,276 @@
+#day 1 problem 1422. max score after splitting
+class Solution(object):
+    def maxScore(self, s):
+        """
+        :type s: str
+        :rtype: int
+        """
+        maxscore = 0
+        n = len(s)
+        for i in range(1,n):
+            left = s[:i]
+            right = s[i:]
+            leftzero = left.count('0')
+            rightone = right.count('1')
+            score = leftzero + rightone
+            maxscore = max(maxscore , score)
+        return maxscore
+
+
+#day 2 problem 2559. count vowel strings in ranges
+class Solution(object):
+    def vowelStrings(self, words, queries):
+        """
+        :type words: List[str]
+        :type queries: List[List[int]]
+        :rtype: List[int]
+        """
+        def is_vowel_string(s):
+            vowels = {'a', 'e', 'i', 'o', 'u'}
+            return s[0].lower() in vowels and s[-1].lower() in vowels
+
+        n = len(words)
+        prefix = [0] * (n + 1)
+
+        for i in range(n):
+            prefix[i + 1] = prefix[i] + (1 if is_vowel_string(words[i]) else 0)
+
+        ans = []
+        for li, ri in queries:
+            ans.append(prefix[ri + 1] - prefix[li])
+
+        return ans
+
+
+#day 3 problem 2270. Number of Ways to Split Array
+class Solution(object):
+    def waysToSplitArray(self, nums):
+        """
+        :type nums: List[int]
+        :rtype: int
+        """
+        n = len(nums)
+        total_sum = sum(nums)
+        left_sum = 0
+        valid_splits = 0
+
+        for i in range(n - 1):  
+            left_sum += nums[i]
+            right_sum = total_sum - left_sum
+
+            if left_sum >= right_sum:
+                valid_splits += 1
+
+        return valid_splits
+
+
+#day 4 problem 1930. Unique Length-3 Palindromic Subsequences
+class Solution(object):
+    def countPalindromicSubsequence(self, s):
+        """
+        :type s: str
+        :rtype: int
+        """
+        first_occurrence = {}
+        last_occurrence = {}
+        for i, char in enumerate(s):
+            if char not in first_occurrence:
+                first_occurrence[char] = i
+            last_occurrence[char] = i
+        unique_palindromes = set()
+        for char in first_occurrence:
+            start = first_occurrence[char] + 1
+            end = last_occurrence[char]
+            if start < end:
+                middle_chars = set(s[start:end])
+                for middle_char in middle_chars:
+                    unique_palindromes.add(char + middle_char + char)
+
+        return len(unique_palindromes)
+
+
+#day 5 problem 2381. Shifting Letters II
+class Solution(object):
+    def shiftingLetters(self, s, shifts):
+        """
+        :type s: str
+        :type shifts: List[List[int]]
+        :rtype: str
+        """
+        s = list(s)
+        n = len(s)
+        shift_values = [0] * (n + 1)
+        for start, end, direction in shifts:
+            if direction == 1:
+                shift_values[start] += 1
+                shift_values[end + 1] -= 1
+            else:
+                shift_values[start] -= 1
+                shift_values[end + 1] += 1
+        net_shifts = [0] * n
+        current_shift = 0
+        for i in range(n):
+            current_shift += shift_values[i]
+            net_shifts[i] = current_shift
+        for i in range(n):
+            new_char = chr((ord(s[i]) - ord('a') + net_shifts[i]) % 26 + ord('a'))
+            s[i] = new_char
+        return ''.join(s)
+
+
+#day 6 problem 1769. Minimum Number of Operations to Move All Balls to Each Box
+class Solution(object):
+    def minOperations(self, boxes):
+        """
+        :type boxes: str
+        :rtype: List[int]
+        """
+        n = len(boxes)
+        answer = [0] * n
+        count = 0 
+        operations = 0 
+        for i in range(n):
+            answer[i] += operations
+            if boxes[i] == '1':
+                count += 1
+            operations += count
+        count = 0
+        operations = 0
+        for i in range(n - 1, -1, -1):
+            answer[i] += operations
+            if boxes[i] == '1':
+                count += 1
+            operations += count
+
+        return answer
+
+
+#day 7 problem 1408. String Matching in an Array
+class Solution(object):
+    def stringMatching(self, words):
+        """
+        :type words: List[str]
+        :rtype: List[str]
+        """
+        result = set()
+        n = len(words)
+
+        for i in range(n):
+            for j in range(n):
+                if i != j and words[i] in words[j]:
+                    result.add(words[i])
+
+        return list(result)
+
+#day8 problem 3042. Count Prefix and Suffix Pairs I
+class Solution(object):
+    def countPrefixSuffixPairs(self, words):  
+        """
+        :type words: List[str]
+        :rtype: int
+        """
+        def isPrefixAndSuffix(str1, str2):
+            return str2.startswith(str1) and str2.endswith(str1)
+
+        count = 0
+        n = len(words)
+        for i in range(n):
+            for j in range(i + 1, n):
+                if isPrefixAndSuffix(words[i], words[j]):
+                    count += 1
+        return count
+
+
+#day 9 problem 2185. Counting Words With a Given Prefix
+class Solution(object):
+    def prefixCount(self, words, pref):
+        """
+        :type words: List[str]
+        :type pref: str
+        :rtype: int
+        """
+        count = 0
+        for word in words:
+            if word.startswith(pref):
+                count += 1
+        return count
+
+
+#day 10 916. Word Subsets
+class Solution(object):
+    def wordSubsets(self, words1, words2):
+        """
+        :type words1: List[str]
+        :type words2: List[str]
+        :rtype: List[str]
+        """
+        from collections import Counter
+        def get_max_frequencies(words):
+            max_freq = Counter()
+            for word in words:
+                freq = Counter(word)
+                for char in freq:
+                    max_freq[char] = max(max_freq[char], freq[char])
+            return max_freq
+        max_b_freq = get_max_frequencies(words2)
+        def is_universal(word):
+            word_freq = Counter(word)
+            for char in max_b_freq:
+                if word_freq[char] < max_b_freq[char]:
+                    return False
+            return True
+        return [word for word in words1 if is_universal(word)]
+
+
+#day 11 1400. Construct K Palindrome Strings
+from collections import Counter
+
+class Solution(object):
+    def canConstruct(self, s, k):
+        """
+        :type s: str
+        :type k: int
+        :rtype: bool
+        """
+        if k > len(s):
+            return False
+        char_count = Counter(s)
+        odd_count = sum(1 for count in char_count.values() if count % 2 == 1)
+        return odd_count <= k
+
+
+#day 12 2116. Check if a Parentheses String Can Be Valid
+class Solution(object):
+    def canBeValid(self, s, locked):
+        """
+        :type s: str
+        :type locked: str
+        :rtype: bool
+        """
+        if len(s) % 2 != 0:
+            return False
+        open_balance = 0
+        for i in range(len(s)):
+            if locked[i] == '1':
+                if s[i] == '(':
+                    open_balance += 1
+                else:
+                    open_balance -= 1
+            else:
+                open_balance += 1
+            if open_balance < 0:
+                return False
+        close_balance = 0
+        for i in range(len(s) - 1, -1, -1):
+            if locked[i] == '1':
+                if s[i] == ')':
+                    close_balance += 1
+                else:
+                    close_balance -= 1
+            else:
+                close_balance += 1
+            if close_balance < 0:
+                return False
+
+        return True
+
